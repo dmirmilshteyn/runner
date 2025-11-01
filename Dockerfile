@@ -41,7 +41,7 @@ FROM mcr.microsoft.com/dotnet/runtime-deps:8.0-noble
 ENV DEBIAN_FRONTEND=noninteractive
 ENV RUNNER_MANUALLY_TRAP_SIG=1
 ENV ACTIONS_RUNNER_PRINT_LOG_TO_STDOUT=1
-ENV ImageOS=ubuntu22
+ENV ImageOS=ubuntu24
 
 # 'gpg-agent' and 'software-properties-common' are needed for the 'add-apt-repository' command that follows
 RUN apt update -y \
