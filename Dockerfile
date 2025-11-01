@@ -76,4 +76,6 @@ FROM runner
 ENV DOTNET_INSTALL_DIR=./.dotnet
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
 
-RUN sudo apt install -y p7zip-full
+RUN sudo apt update -y \
+    && sudo apt install -y p7zip-full \
+    && sudo rm -rf /var/lib/apt/lists/*
