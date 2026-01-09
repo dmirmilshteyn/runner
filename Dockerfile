@@ -82,4 +82,5 @@ RUN sudo apt update -y \
     && sudo rm -rf /var/lib/apt/lists/*
 
 # Support for Playwright
-RUN npx playwright install chromium
+RUN npx -y playwright install chromium && \
+    npx -y playwright install chrome
