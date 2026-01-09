@@ -78,5 +78,5 @@ ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
 ENV GITHUB_HOST=github.com
 
 RUN sudo apt update -y \
-    && sudo apt install -y --no-install-recommends p7zip-full clang zlib1g-dev nodejs npm \
+    && sudo apt install -y --no-install-recommends p7zip-full clang zlib1g-dev nodejs npm libfontconfig1 \
     && sudo rm -rf /var/lib/apt/lists/*
