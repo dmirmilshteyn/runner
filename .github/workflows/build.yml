@@ -8,8 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    outputs:
-      image_tag: ${{ steps.image_tag.outputs.image_tag }}
 
     permissions:
       contents: read
@@ -32,13 +30,18 @@ jobs:
 
     - name: Set image tag
       id: image_tag
-      run: echo "image_tag=ghcr.io/${{ github.repository_owner }}/runner:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+      run: |
+        image_tag="ghcr.io/${{ github.repository_owner }}/runner:${{ github.sha }}"
+        echo "image_tag=$image_tag" >> "$GITHUB_ENV"
+        echo "## Image" >> "$GITHUB_STEP_SUMMARY"
+        echo "" >> "$GITHUB_STEP_SUMMARY"
+        echo "\`$image_tag\`" >> "$GITHUB_STEP_SUMMARY"
 
     - name: Build and push
       uses: docker/build-push-action@v2
       with:
         context: .
         push: true
-        tags: ${{ steps.image_tag.outputs.image_tag }}
+        tags: ${{ env.image_tag }}
         platforms: |
             linux/amd64
