@@ -1,5 +1,5 @@
 # Source: https://github.com/actions/runner/blob/main/images/Dockerfile
-FROM ghcr.io/actions/actions-runner:2.334.0
+FROM ghcr.io/actions/actions-runner:2.335.0
 
 ENV DOTNET_INSTALL_DIR=./.dotnet
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
