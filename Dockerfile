@@ -18,7 +18,7 @@ RUN sudo apt update -y \
     && curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg \
     && echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list \
     && sudo apt update -y \
-    && sudo apt install -y --no-install-recommends ansible terraform \
+    && sudo apt install -y --no-install-recommends ansible ovmf qemu-system-x86 qemu-utils terraform \
     && KUBERNETES_ARCH="$(dpkg --print-architecture)" \
     && curl -fsSL -o /tmp/kubectl "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${KUBERNETES_ARCH}/kubectl" \
     && sudo install -m 0755 /tmp/kubectl /usr/local/bin/kubectl \
@@ -28,7 +28,7 @@ RUN sudo apt update -y \
     && rm -rf "/tmp/linux-${KUBERNETES_ARCH}" \
     && curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" | sudo tar -C /usr/local -xz \
     && sudo apt install -y --no-install-recommends p7zip-full clang cmake zlib1g-dev python3 python3-venv python3-pip jq gettext-base libfontconfig1 libnspr4 libnss3 libatk1.0-0t64 libatk-bridge2.0-0t64 libcups2t64 libxkbcommon0 libasound2t64 libgbm1 libcairo2 libpango-1.0-0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libatspi2.0-0t64 \
-    && sudo python3 -m pip install --break-system-packages --ignore-installed kubernetes \
+    && sudo python3 -m pip install --break-system-packages --ignore-installed awscli kubernetes \
     && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.6/install.sh | bash \
     && source "$NVM_DIR/nvm.sh" \
     && nvm install 24 \
