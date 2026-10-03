@@ -16,7 +16,18 @@ RUN sudo apt update -y \
     && sudo apt install -y --no-install-recommends ca-certificates curl gnupg lsb-release software-properties-common \
     && sudo add-apt-repository --yes --update ppa:ansible/ansible \
     && curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg \
-    && echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list \
+    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list \
+    # Keep the existing Ubuntu and PPA sources on amd64; ARM packages live on Ubuntu Ports. \
+    && sudo sed -i '/^Types: deb$/a Architectures: amd64' /etc/apt/sources.list.d/*.sources \
+    && sudo dpkg --add-architecture arm64 \
+    && printf '%s\n' \
+        'Types: deb' \
+        'URIs: http://ports.ubuntu.com/ubuntu-ports/' \
+        "Suites: $(lsb_release -cs) $(lsb_release -cs)-updates $(lsb_release -cs)-backports $(lsb_release -cs)-security" \
+        'Components: main universe restricted multiverse' \
+        'Architectures: arm64' \
+        'Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg' \
+        | sudo tee /etc/apt/sources.list.d/ubuntu-arm64.sources \
     && sudo apt update -y \
     && sudo apt install -y --no-install-recommends ansible ovmf qemu-system-x86 qemu-utils terraform \
     && KUBERNETES_ARCH="$(dpkg --print-architecture)" \
@@ -27,7 +38,8 @@ RUN sudo apt update -y \
     && sudo install -m 0755 "/tmp/linux-${KUBERNETES_ARCH}/helm" /usr/local/bin/helm \
     && rm -rf "/tmp/linux-${KUBERNETES_ARCH}" \
     && curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" | sudo tar -C /usr/local -xz \
-    && sudo apt install -y --no-install-recommends p7zip-full wine64 clang cmake zlib1g-dev flatpak flatpak-builder python3 python3-venv python3-pip jq gettext-base libfontconfig1 libnspr4 libnss3 libatk1.0-0t64 libatk-bridge2.0-0t64 libcups2t64 libxkbcommon0 libasound2t64 libgbm1 libcairo2 libpango-1.0-0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libatspi2.0-0t64 \
+    # QEMU packages provide emulators only; binfmt registration belongs on the runner host. \
+    && sudo apt install -y --no-install-recommends p7zip-full wine64 clang cmake zlib1g-dev:amd64 zlib1g-dev:arm64 gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu llvm qemu-user-static binfmt-support flatpak flatpak-builder python3 python3-venv python3-pip jq gettext-base libfontconfig1 libnspr4 libnss3 libatk1.0-0t64 libatk-bridge2.0-0t64 libcups2t64 libxkbcommon0 libasound2t64 libgbm1 libcairo2 libpango-1.0-0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libatspi2.0-0t64 \
     && sudo python3 -m pip install --break-system-packages --ignore-installed awscli kubernetes \
     && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.6/install.sh | bash \
     && source "$NVM_DIR/nvm.sh" \
