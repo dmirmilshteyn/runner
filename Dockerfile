@@ -39,7 +39,7 @@ RUN sudo apt update -y \
     && rm -rf "/tmp/linux-${KUBERNETES_ARCH}" \
     && curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" | sudo tar -C /usr/local -xz \
     # QEMU packages provide emulators only; binfmt registration belongs on the runner host. \
-    && sudo apt install -y --no-install-recommends p7zip-full wine64 clang cmake zlib1g-dev:amd64 zlib1g-dev:arm64 gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu llvm qemu-user-static binfmt-support flatpak flatpak-builder python3 python3-venv python3-pip jq gettext-base libfontconfig1 libnspr4 libnss3 libatk1.0-0t64 libatk-bridge2.0-0t64 libcups2t64 libxkbcommon0 libasound2t64 libgbm1 libcairo2 libpango-1.0-0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libatspi2.0-0t64 \
+    && sudo apt install -y --no-install-recommends p7zip-full wine64 clang cmake zlib1g-dev:amd64 zlib1g-dev:arm64 gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu llvm qemu-user-static binfmt-support flatpak flatpak-builder elfutils python3 python3-venv python3-pip jq gettext-base libfontconfig1 libnspr4 libnss3 libatk1.0-0t64 libatk-bridge2.0-0t64 libcups2t64 libxkbcommon0 libasound2t64 libgbm1 libcairo2 libpango-1.0-0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libatspi2.0-0t64 \
     && sudo python3 -m pip install --break-system-packages --ignore-installed awscli kubernetes \
     && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.6/install.sh | bash \
     && source "$NVM_DIR/nvm.sh" \

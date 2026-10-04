@@ -4,7 +4,8 @@ Custom Ubuntu x64 image for Actions Runner Controller (ARC). The build workflow
 publishes only `linux/amd64`; ARM64 is a cross-compilation and packaging target.
 
 The image includes Clang, LLVM, the ARM64 GCC/binutils toolchain, development
-libraries for zlib on both amd64 and arm64, Flatpak, Flatpak Builder, and static
+libraries for zlib on both amd64 and arm64, Flatpak, Flatpak Builder, elfutils
+(`eu-strip` and `eu-elfcompress`), and static
 QEMU user emulators. Existing Ubuntu/PPA and HashiCorp sources are limited to
 amd64. ARM64 packages come from Ubuntu Ports, including the matching release,
 updates, backports, and security suites.
@@ -20,7 +21,8 @@ docker run --rm --platform linux/amd64 \
 
 The check compiles and links ARM64 programs against ARM64 zlib using GCC and
 Clang, checks the ELF architecture and LLVM tooling, and runs them by explicitly
-invoking QEMU. It also checks the installed packages and Flatpak tool versions.
+invoking QEMU. It also strips and compresses ARM64 debug information with
+elfutils and checks the installed packages and Flatpak/elfutils tool versions.
 Explicit QEMU execution does **not** verify transparent execution through binfmt.
 
 For .NET NativeAOT, install the required .NET SDK in the job and publish with
