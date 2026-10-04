@@ -13,7 +13,7 @@ ENV HELM_VERSION=v4.2.3
 ENV GO_VERSION=1.26.5
 
 RUN sudo apt update -y \
-    && sudo apt install -y --no-install-recommends ca-certificates curl gnupg lsb-release software-properties-common \
+    && sudo apt install -y --no-install-recommends ca-certificates curl file gnupg lsb-release software-properties-common \
     && sudo add-apt-repository --yes --update ppa:ansible/ansible \
     && curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg \
     && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list \
