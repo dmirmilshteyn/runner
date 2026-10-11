@@ -4,7 +4,7 @@ set -euo pipefail
 test "$(dpkg --print-architecture)" = amd64
 dpkg --print-foreign-architectures | grep -qx arm64
 dpkg-query -W -f='${Package}:${Architecture} ${Status}\n' \
-    clang gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu llvm \
+    clang-21 gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu llvm-21 \
     zlib1g-dev:amd64 zlib1g-dev:arm64 qemu-user-static binfmt-support \
     flatpak flatpak-builder elfutils
 
