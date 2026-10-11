@@ -3,7 +3,8 @@
 Custom Ubuntu x64 image for Actions Runner Controller (ARC). The build workflow
 publishes only `linux/amd64`; ARM64 is a cross-compilation and packaging target.
 
-The image includes Clang, LLVM, the ARM64 GCC/binutils toolchain, development
+The image includes Git LFS with system-wide filters, Clang, LLVM, amd64 libc++
+and libc++abi development libraries for native C++ linking, the ARM64 GCC/binutils toolchain, development
 libraries for zlib on both amd64 and arm64, Flatpak, Flatpak Builder, elfutils
 (`eu-strip` and `eu-elfcompress`), and static
 QEMU user emulators. Existing Ubuntu/PPA and HashiCorp sources are limited to

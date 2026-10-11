@@ -13,7 +13,9 @@ ENV HELM_VERSION=v4.2.3
 ENV GO_VERSION=1.26.5
 
 RUN sudo apt update -y \
-    && sudo apt install -y --no-install-recommends ca-certificates curl file gnupg lsb-release software-properties-common \
+    && sudo apt install -y --no-install-recommends ca-certificates curl file git-lfs gnupg lsb-release software-properties-common \
+    && sudo git lfs install --system --skip-repo \
+    && git lfs version \
     && sudo add-apt-repository --yes --update ppa:ansible/ansible \
     && curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg \
     && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list \
@@ -39,7 +41,7 @@ RUN sudo apt update -y \
     && rm -rf "/tmp/linux-${KUBERNETES_ARCH}" \
     && curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" | sudo tar -C /usr/local -xz \
     # QEMU packages provide emulators only; binfmt registration belongs on the runner host. \
-    && sudo apt install -y --no-install-recommends p7zip-full wine64 clang cmake zlib1g-dev:amd64 zlib1g-dev:arm64 gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu llvm qemu-user-static binfmt-support flatpak flatpak-builder elfutils python3 python3-venv python3-pip jq gettext-base libfontconfig1 libnspr4 libnss3 libatk1.0-0t64 libatk-bridge2.0-0t64 libcups2t64 libxkbcommon0 libasound2t64 libgbm1 libcairo2 libpango-1.0-0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libatspi2.0-0t64 \
+    && sudo apt install -y --no-install-recommends p7zip-full wine64 clang cmake libc++-dev:amd64 libc++abi-dev:amd64 zlib1g-dev:amd64 zlib1g-dev:arm64 gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu llvm qemu-user-static binfmt-support flatpak flatpak-builder elfutils python3 python3-venv python3-pip jq gettext-base libfontconfig1 libnspr4 libnss3 libatk1.0-0t64 libatk-bridge2.0-0t64 libcups2t64 libxkbcommon0 libasound2t64 libgbm1 libcairo2 libpango-1.0-0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libatspi2.0-0t64 \
     && sudo python3 -m pip install --break-system-packages --ignore-installed awscli kubernetes \
     && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.6/install.sh | bash \
     && source "$NVM_DIR/nvm.sh" \
