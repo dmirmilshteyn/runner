@@ -3,35 +3,6 @@
 Custom Ubuntu x64 image for Actions Runner Controller (ARC). The build workflow
 publishes only `linux/amd64`; ARM64 is a cross-compilation and packaging target.
 
-## Bundled .NET security verification
-
-The base Actions runner is pinned to `2.338.2` and its immutable image digest.
-It bundles .NET `8.0.33` for Listener, Worker, and PluginHost, addressing
-[CVE-2026-111497](https://github.com/dotnet/announcements/issues/494).
-Installing a separate SDK would not update these self-contained applications.
-
-After pushing, the build workflow pulls the published image by digest, checks
-all three runtime configurations, audits the image for additional .NET runtimes,
-compares CoreCLR and the native compression binary with Microsoft's
-runtime distribution, and starts the listener with `--version`. The image digest
-and verification result are recorded in the workflow summary. Run the same audit
-locally with:
-
-```sh
-docker run --rm --platform linux/amd64 --user root \
-  -v "$PWD/scripts:/checks:ro" --entrypoint python3 \
-  IMAGE@sha256:DIGEST /checks/verify-dotnet-runtime.py
-```
-
-The binary hashes in the check come from
-[Microsoft's linux-x64 .NET 8.0.33 runtime archive](https://builds.dotnet.microsoft.com/dotnet/Runtime/8.0.33/dotnet-runtime-8.0.33-linux-x64.tar.gz),
-verified against [official release metadata](https://builds.dotnet.microsoft.com/dotnet/release-metadata/8.0/releases.json).
-The archive's SHA-512 is
-`b314039d337a8c5c4be6a6f99712a2618cbeb5e1ab7cac7a5c1cbf1c97bd355f5d116b9932a8cfc604ac7849f74638896eba0534892c6518311908aba29b4f7b`.
-Review and refresh these checks when updating the base runner/runtime.
-
-## ARM64 toolchain
-
 The image includes Git LFS with system-wide filters, Clang and LLVM 21 from the
 signed LLVM apt repository, and matching amd64 libc++ and libc++abi development
 libraries for native C++ linking. LLVM's bin directory is first on PATH so its
