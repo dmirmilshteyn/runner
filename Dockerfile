@@ -1,5 +1,5 @@
 # Source: https://github.com/actions/runner/blob/main/images/Dockerfile
-FROM ghcr.io/actions/actions-runner:2.337.0
+FROM ghcr.io/actions/actions-runner:2.338.2@sha256:759a1d94a15b05941aba5196974ff43fe15b4cbba29b694b35cbc32a1166b232
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 

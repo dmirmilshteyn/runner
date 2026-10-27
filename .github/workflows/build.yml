@@ -33,11 +33,14 @@ jobs:
       run: |
         image_tag="ghcr.io/${{ github.repository_owner }}/runner:${{ github.sha }}"
         echo "image_tag=$image_tag" >> "$GITHUB_ENV"
-        echo "## Image" >> "$GITHUB_STEP_SUMMARY"
-        echo "" >> "$GITHUB_STEP_SUMMARY"
-        echo "\`$image_tag\`" >> "$GITHUB_STEP_SUMMARY"
+        {
+          echo "## Image"
+          echo ""
+          echo "\`$image_tag\`"
+        } >> "$GITHUB_STEP_SUMMARY"
 
     - name: Build and push
+      id: build
       uses: docker/build-push-action@v7
       with:
         context: .
@@ -45,3 +48,19 @@ jobs:
         tags: ${{ env.image_tag }}
         platforms: |
             linux/amd64
+
+    - name: Verify published .NET runtime
+      env:
+        IMAGE_DIGEST: ${{ steps.build.outputs.digest }}
+      run: |
+        image="${image_tag}@${IMAGE_DIGEST}"
+        docker pull --platform linux/amd64 "$image"
+        docker run --rm --platform linux/amd64 --user root \
+          -v "$PWD/scripts:/checks:ro" --entrypoint python3 \
+          "$image" /checks/verify-dotnet-runtime.py
+        docker run --rm --platform linux/amd64 --entrypoint /home/runner/bin/Runner.Listener \
+          "$image" --version
+        {
+          echo ""
+          echo "Verified linux/amd64: \`$image\`; bundled .NET 8.0.33."
+        } >> "$GITHUB_STEP_SUMMARY"
