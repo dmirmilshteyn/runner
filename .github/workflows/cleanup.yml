@@ -1,0 +1,75 @@
+name: Cleanup
+
+on:
+  schedule:
+    - cron: '23 7 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: cleanup
+  cancel-in-progress: false
+
+jobs:
+  merge-dependabot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Merge ready Dependabot pull requests
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const { data: repository } = await github.rest.repos.get(context.repo);
+            const pullRequests = await github.paginate(github.rest.pulls.list, {
+              ...context.repo,
+              state: 'open',
+              base: repository.default_branch,
+              per_page: 100,
+            });
+
+            for (const candidate of pullRequests) {
+              if (candidate.user.login !== 'dependabot[bot]' || candidate.draft
+                || candidate.head.repo?.full_name !== repository.full_name) {
+                continue;
+              }
+
+              const { data: pullRequest } = await github.rest.pulls.get({
+                ...context.repo,
+                pull_number: candidate.number,
+              });
+              if (pullRequest.state !== 'open' || pullRequest.draft
+                || pullRequest.user.login !== 'dependabot[bot]'
+                || pullRequest.head.repo?.full_name !== repository.full_name
+                || pullRequest.base.ref !== repository.default_branch
+                || pullRequest.mergeable !== true
+                || pullRequest.mergeable_state !== 'clean') {
+                core.info(`Skipping #${candidate.number}: ${pullRequest.mergeable_state}`);
+                continue;
+              }
+
+              try {
+                const { data: result } = await github.rest.pulls.merge({
+                  ...context.repo,
+                  pull_number: candidate.number,
+                  sha: pullRequest.head.sha,
+                  merge_method: 'squash',
+                });
+                if (!result.merged) {
+                  core.setFailed(`Could not merge #${candidate.number}: ${result.message}`);
+                  continue;
+                }
+                core.info(`Merged Dependabot PR #${candidate.number}`);
+                core.info('Waiting 10 seconds for GitHub to recalculate mergeability');
+                await new Promise(resolve => setTimeout(resolve, 10000));
+              } catch (error) {
+                if (error.status === 405 || error.status === 409) {
+                  core.warning(`Skipping #${candidate.number}: ${error.message}`);
+                  continue;
+                }
+                throw error;
+              }
+            }
